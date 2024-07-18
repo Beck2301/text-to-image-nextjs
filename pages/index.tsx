@@ -1,32 +1,31 @@
-// pages/index.tsx
-
-import { useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import axios, { AxiosError } from 'axios';
 
 const MyComponent = () => {
-  const [prompt, setPrompt] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const [prompt, setPrompt] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string>('');
 
   const handleGenerateImage = async () => {
     try {
-      const apiUrl =
-        "https://api.cloudflare.com/client/v4/accounts/cb44248de67e3b2f434020452faa652f/ai/run/@cf/bytedance/stable-diffusion-xl-lightning";
-      const headers = {
-        Authorization: "Bearer tu_token_de_autorizacion",
-        "X-Auth-Email": "bescobar2321@gmail.com",
-        "X-Auth-Key": "50e6f077a0dc5bc51db4d2251a1710fedb3b0",
-        "Content-Type": "application/json",
-      };
-      const data = {
+      const apiUrl = '/api/generate-image'; 
+      const response = await axios.post(apiUrl, {
         prompt: prompt,
-      };
+      });
 
-      const response = await axios.post(apiUrl, data, { headers });
-      if (response.data.result) {
-        setImageUrl(response.data.result); // Assuming the API response returns an image URL
+      // Verificamos la estructura de la respuesta
+      if (response.data.result && typeof response.data.result === 'string') {
+        setImageUrl(response.data.result); // Asignamos la URL de la imagen generada
+      } else {
+        console.error('No se recibió la URL de la imagen en la respuesta');
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    } catch (error: unknown) {
+      // Manejo de errores
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        console.error('Error de Axios:', axiosError.message);
+      } else {
+        console.error('Error desconocido:', error);
+      }
     }
   };
 
@@ -46,7 +45,12 @@ const MyComponent = () => {
         />
         <button onClick={handleGenerateImage}>Generate Image</button>
       </div>
-      {imageUrl && <img src={imageUrl} alt="Generated Image" />}
+      {imageUrl && (
+        <div>
+          <p>Imagen generada:</p>
+          <img src={imageUrl} alt="Generated Image" />
+        </div>
+      )}
     </div>
   );
 };
