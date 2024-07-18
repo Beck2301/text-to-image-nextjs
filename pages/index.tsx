@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const MyComponent = () => {
+const IAimageGeneate = () => {
   const [prompt, setPrompt] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
 
@@ -27,16 +27,17 @@ const MyComponent = () => {
   };
 
   return (
-    <div>
-      <h1>Generated Image for Prompt:</h1>
-      <div>
+    <div className="md:max-w-2xl w-3/4">
+      <h1 className="text-3xl">Generated Image for Prompt:</h1>
+      <div className="my-5 flex gap-5 justify-center" >
         <input
           type="text"
           placeholder="Enter your prompt"
           value={prompt}
           onChange={handlePromptChange}
+          className="bg-transparent border-b w-full"
         />
-        <button onClick={handleGenerateImage}>Generate Image</button>
+        <button onClick={handleGenerateImage} className="bg-white p-3 text-black rounded-lg">Generate</button>
       </div>
       {imageUrl && (
         <div>
@@ -45,6 +46,7 @@ const MyComponent = () => {
             src={imageUrl}
             alt="Generated Image"
             style={{ display: "block", userSelect: "none" }}
+            className="w-full mt-5"
           />
         </div>
       )}
@@ -52,4 +54,4 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;
+export default IAimageGeneate;
