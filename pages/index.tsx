@@ -1,31 +1,24 @@
-import { useState } from 'react';
-import axios, { AxiosError } from 'axios';
+import { useState } from "react";
 
 const MyComponent = () => {
-  const [prompt, setPrompt] = useState<string>('');
-  const [imageUrl, setImageUrl] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const handleGenerateImage = async () => {
     try {
-      const apiUrl = '/api/generate-image'; 
-      const response = await axios.post(apiUrl, {
-        prompt: prompt,
-      });
+      const apiUrl = `/api/generate-image?prompt=${encodeURIComponent(prompt)}`;
+      const response = await fetch(apiUrl);
 
-      // Verificamos la estructura de la respuesta
-      if (response.data.result && typeof response.data.result === 'string') {
-        setImageUrl(response.data.result); // Asignamos la URL de la imagen generada
-      } else {
-        console.error('No se recibió la URL de la imagen en la respuesta');
+      if (!response.ok) {
+        throw new Error("Failed to generate image");
       }
-    } catch (error: unknown) {
-      // Manejo de errores
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        console.error('Error de Axios:', axiosError.message);
-      } else {
-        console.error('Error desconocido:', error);
-      }
+
+      const blob = await response.blob();
+      const imageURL = URL.createObjectURL(blob);
+
+      setImageUrl(imageURL);
+    } catch (error) {
+      console.error("Error fetching image:", error);
     }
   };
 
@@ -47,8 +40,12 @@ const MyComponent = () => {
       </div>
       {imageUrl && (
         <div>
-          <p>Imagen generada:</p>
-          <img src={imageUrl} alt="Generated Image" />
+          <p>Generated Image:</p>
+          <img
+            src={imageUrl}
+            alt="Generated Image"
+            style={{ display: "block", userSelect: "none" }}
+          />
         </div>
       )}
     </div>
