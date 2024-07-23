@@ -52,6 +52,7 @@ const IAimageGenerate = () => {
       </div>
       {data && (
         <div>
+          <p>Generated Image:</p>
           <img
             src={data}
             alt='Generated Image'
