@@ -34,6 +34,7 @@ export default async function handler(
       }
 
       const imageBuffer = await response.arrayBuffer();
+      res.status(200).send(Buffer.from(imageBuffer));
       const buffer = Buffer.from(imageBuffer);
 
       const s3 = new AWS.S3({
