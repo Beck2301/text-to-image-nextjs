@@ -11,7 +11,9 @@ const poppins = Poppins({
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <main className={`${poppins.className} bg-black min-h-screen text-white flex items-center justify-center w-full py-10`}>
+    <main
+      className={`${poppins.className} bg-black min-h-screen text-white flex items-center justify-center w-full py-10`}
+    >
       <Component {...pageProps} />
     </main>
   );

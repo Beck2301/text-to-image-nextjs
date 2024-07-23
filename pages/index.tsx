@@ -1,71 +1,67 @@
-import { useState } from "react";
-import { FaSpinner } from "react-icons/fa";
+import { useState } from 'react'
+import { FaSpinner } from 'react-icons/fa'
+
+import { mutateData, useBlob } from 'http-react'
 
 const IAimageGenerate = () => {
-  const [prompt, setPrompt] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [prompt, setPrompt] = useState<string>('')
 
-  const handleGenerateImage = async () => {
-    setLoading(true);
-    try {
-      const apiUrl = `/api/generate-image?prompt=${encodeURIComponent(prompt)}`;
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        throw new Error("Failed to generate image");
-      }
-
-      const blob = await response.blob();
-      const imageURL = URL.createObjectURL(blob);
-
-      setImageUrl(imageURL);
-    } catch (error) {
-      console.error("Error fetching image:", error);
-    } finally {
-      setLoading(false);
+  const { data, loading, refresh } = useBlob('/api/generate-image', {
+    auto: false,
+    objectURL: true,
+    default:
+      'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg',
+    query: {
+      prompt
     }
-  };
+  })
 
   const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrompt(event.target.value);
-  };
+    setPrompt(event.target.value)
+  }
+
+  function resetImage() {
+    mutateData([
+      'GET /api/generate-image',
+      'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg'
+    ])
+  }
 
   return (
-    <div className="md:max-w-2xl w-3/4">
-      <h1 className="text-3xl">Generated Image for Prompt:</h1>
-      <div className="my-5 flex gap-5 justify-center">
+    <div className='md:max-w-2xl w-3/4'>
+      <h1 className='text-3xl'>Generated Image for Prompt:</h1>
+      <div className='my-5 flex gap-5 justify-center'>
         <input
-          type="text"
-          placeholder="Enter your prompt"
+          type='text'
+          placeholder='Enter your prompt'
           value={prompt}
           onChange={handlePromptChange}
-          className="bg-transparent border-b w-full"
+          className='bg-transparent border-b w-full'
         />
+        <button onClick={resetImage}>Reset</button>
         <button
-          onClick={handleGenerateImage}
-          className="bg-white p-3 text-black rounded-lg flex items-center"
+          onClick={refresh}
+          className='bg-white p-3 text-black rounded-lg flex items-center'
           disabled={loading}
         >
           {loading && (
-            <FaSpinner className="animate-spin h-5 w-5 mr-2 text-black" />
+            <FaSpinner className='animate-spin h-5 w-5 mr-2 text-black' />
           )}
-          {loading ? "Generating" : "Generate"}
+          {loading ? 'Generating' : 'Generate'}
         </button>
       </div>
-      {imageUrl && (
+      {data && (
         <div>
-          <p>Generated Image:</p>
           <img
-            src={imageUrl}
-            alt="Generated Image"
-            style={{ display: "block", userSelect: "none" }}
-            className="w-full mt-5 rounded-lg"
+            src={data}
+            alt='Generated Image'
+            style={{ display: 'block', userSelect: 'none' }}
+            className='w-full mt-5 rounded-lg'
           />
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default IAimageGenerate;
+export default IAimageGenerate
